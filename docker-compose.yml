@@ -14,12 +14,33 @@ services:
       MAX_HEAP_SIZE: "${CASSANDRA_MAX_HEAP_SIZE}"
     volumes:
       - cassandra_data:/var/lib/cassandra
-      - ./cassandra/init.cql:/docker-entrypoint-initdb.d/init.cql
     healthcheck:
       test: ["CMD-SHELL", "nodetool status | grep -q '^UN'"]
       interval: 30s
       timeout: 10s
       retries: 10
+    networks:
+      - gridsense_net
+
+  cassandra-init:
+    image: cassandra:4.1
+    container_name: gridsense_cassandra_init
+    depends_on:
+      timeseries-db:
+        condition: service_healthy
+    volumes:
+      - ./cassandra/init.cql:/init.cql
+    entrypoint: >
+      bash -c "
+      echo 'Waiting for Cassandra...';
+      until cqlsh timeseries-db -e 'DESCRIBE KEYSPACES'; do
+        echo 'Still waiting...';
+        sleep 5;
+      done;
+      echo 'Running schema...';
+      cqlsh timeseries-db -f /init.cql;
+      echo 'Cassandra schema initialized';
+      "
     networks:
       - gridsense_net
 
@@ -66,7 +87,7 @@ services:
     container_name: gridsense_postgres
     restart: unless-stopped
     ports:
-      - "5432:5432"
+      - "5433:5432"
     environment:
       POSTGRES_USER: "${POSTGRES_USER}"
       POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
@@ -87,7 +108,7 @@ services:
     container_name: gridsense_redis
     restart: unless-stopped
     ports:
-      - "6379:6379"
+      - "6380:6379"
     command: ["redis-server", "--requirepass", "${REDIS_PASSWORD}"]
     volumes:
       - redis_data:/data
@@ -105,6 +126,8 @@ services:
     depends_on:
       timeseries-db:
         condition: service_healthy
+      cassandra-init:
+        condition: service_completed_successfully
       graph-db:
         condition: service_healthy
       billing-db:

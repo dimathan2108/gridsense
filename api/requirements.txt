@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+cassandra-driver
+neo4j
+motor
+asyncpg
+redis
