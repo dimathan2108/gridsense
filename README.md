@@ -40,12 +40,9 @@ python scripts/seed.py
 
 This script will:
 
-Populate Neo4j with:
-10 substations
-40 transformers
-200 smart meters
-Insert 50,000 time-series readings into Cassandra
-Insert 30 heterogeneous equipment documents into MongoDB
-Insert 100 accounts and invoices into PostgreSQL
+Populate Neo4j with 10 substations, 10 feeders, 40 transformers, 200 smart meters <br />
+Insert 50,000 time series readings into Cassandra <br />
+Insert 30 heterogenous equipment documents into MongoDB <br />
+Insert 100 accounts and invoices into PostgreSQL <br />
 
 ✔ The script is idempotent (safe to run multiple times)
