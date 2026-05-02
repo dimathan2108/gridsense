@@ -40,4 +40,4 @@ CREATE TABLE IF NOT EXISTS sensor_readings_by_time (
     quality_flag TINYINT,
     PRIMARY KEY ((time_window_start), reading_time, sensor_id)
 ) WITH CLUSTERING ORDER BY (reading_time DESC, sensor_id ASC)
-AND default_time_to_live = 300; -- short TTL for dashboard cache
+AND default_time_to_live = 7776000;

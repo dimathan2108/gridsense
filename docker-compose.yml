@@ -94,12 +94,35 @@ services:
       POSTGRES_DB: "${POSTGRES_DB}"
     volumes:
       - pg_data:/var/lib/postgresql/data
-      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
       retries: 10
+    networks:
+      - gridsense_net
+
+  postgres-init:
+    image: postgres:15
+    container_name: gridsense_postgres_init
+    depends_on:
+      billing-db:
+        condition: service_healthy
+    env_file:
+      - .env
+    volumes:
+      - ./postgres/init.sql:/init.sql
+    entrypoint: >
+      bash -c "
+      echo 'Waiting for PostgreSQL...';
+      until pg_isready -h billing-db -U ${POSTGRES_USER} -d ${POSTGRES_DB}; do
+        echo 'Still waiting for PostgreSQL...';
+        sleep 5;
+      done;
+      echo 'Running PostgreSQL schema...';
+      PGPASSWORD=${POSTGRES_PASSWORD} psql -h billing-db -U ${POSTGRES_USER} -d ${POSTGRES_DB} -f /init.sql;
+      echo 'PostgreSQL schema initialized';
+      "
     networks:
       - gridsense_net
 
@@ -132,6 +155,8 @@ services:
         condition: service_healthy
       billing-db:
         condition: service_healthy
+      postgres-init:
+        condition: service_completed_successfully
       catalog-db:
         condition: service_started
       cache:
