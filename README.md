@@ -3,8 +3,8 @@
 
 Make sure you have installed:
 
-Docker
-Docker Compose
+Docker <br />
+Docker Compose <br />
 Python 3.10+ (for seeding script)
 
 🚀 1. Start the system
@@ -15,10 +15,12 @@ docker compose up --build
 
 This will:
 
-Start all services (Cassandra, Neo4j, MongoDB, PostgreSQL, Redis, API)
-Automatically initialize:
-Cassandra schema (init.cql)
-PostgreSQL schema (init.sql)
+Start all services (Cassandra, Neo4j, MongoDB, PostgreSQL, Redis, API) <br />
+Automatically initialize: <br />
+Cassandra schema (init.cql) <br />
+PostgreSQL schema (init.sql) <br />
+
+Note that port numbers have been changed for Redis and PostgreSQL from the default template that is recommended in case of port conflicts!
 
 🐍 2. Prepare Python environment (for seeding)
 
