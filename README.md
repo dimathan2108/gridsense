@@ -1,4 +1,4 @@
-⚡ GridSense – Setup & Execution Guide
+⚡ GridSense – Setup & Execution Guide <br />
 📦 Prerequisites
 
 Make sure you have installed:
@@ -7,7 +7,7 @@ Docker <br />
 Docker Compose <br />
 Python 3.10+ (for seeding script)
 
-🚀 1. Start the system
+1. Start the system
 
 From the project root:
 
@@ -22,7 +22,7 @@ PostgreSQL schema (init.sql) <br />
 
 Note that port numbers have been changed for Redis and PostgreSQL from the default template that is recommended in case of port conflicts!
 
-🐍 2. Prepare Python environment (for seeding)
+2. Prepare Python environment (for seeding)
 
 Create a virtual environment:
 
@@ -34,7 +34,7 @@ Install dependencies:
 pip install -r api/requirements.txt
 
 
-🌱 3. Seed all databases
+3. Seed all databases
 
 Run:
 

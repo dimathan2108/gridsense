@@ -1,0 +1,3 @@
+phase,requests,p50_latency_ms,p95_latency_ms,p99_latency_ms,cache_hit_rate_percent
+cold,500,7.59,11.02,15.06,99.8
+warm,500,6.91,9.8,10.76,100.0

@@ -1,0 +1,4 @@
+consistency,runs,avg_duration_seconds,avg_throughput_events_per_second,avg_p50_latency_ms,avg_p95_latency_ms,total_errors,error_rate_percent
+ONE,5,14.89,710.46,33.31,65.96,0,0.0
+LOCAL_QUORUM,5,13.66,748.73,40.32,69.99,0,0.0
+ALL,5,14.55,698.71,41.23,73.38,0,0.0

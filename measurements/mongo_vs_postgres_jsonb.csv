@@ -1,0 +1,7 @@
+database,query,runs,mean_latency_ms,p50_latency_ms,result_count_last_run
+MongoDB,firmware_version_starts_3,10,6.9403,3.0871,5
+MongoDB,smartmeter_rated_voltage_gt_230,10,3.0031,2.9349,7
+MongoDB,count_by_type,10,6.5311,3.3523,3
+PostgreSQL JSONB,firmware_version_starts_3,10,2.8633,1.3782,5
+PostgreSQL JSONB,smartmeter_rated_voltage_gt_230,10,2.1185,1.2258,7
+PostgreSQL JSONB,count_by_type,10,2.233,1.2232,3

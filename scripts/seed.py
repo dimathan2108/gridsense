@@ -93,6 +93,12 @@ def seed_neo4j():
             MERGE (s)-[:SUPPLIES {capacity_kva: 2000}]->(f)
             """, substation_id=substation_id, feeder_id=feeder_id)
 
+            # Odd substations are shallow/radial.
+            # Even substations are deeper chained topologies.
+            use_chain = (s % 2 == 0)
+
+            previous_asset_id = None
+
             for t in range(1, 5):
                 transformer_num = (s - 1) * 4 + t
                 asset_id = f"TX_{transformer_num:03d}"
@@ -108,11 +114,30 @@ def seed_neo4j():
                      rating_kva=250 + (transformer_num % 4) * 150,
                      manufacturer=["ABB", "Siemens", "Schneider", "GE"][transformer_num % 4])
 
-                session.run("""
-                MATCH (f:Feeder {feeder_id: $feeder_id})
-                MATCH (t:Transformer {asset_id: $asset_id})
-                MERGE (f)-[:CONNECTS_TO {distance_m: $distance_m}]->(t)
-                """, feeder_id=feeder_id, asset_id=asset_id, distance_m=200 + transformer_num * 5)
+                if use_chain:
+                    if t == 1:
+                        # First transformer connects to feeder.
+                        session.run("""
+                        MATCH (f:Feeder {feeder_id: $feeder_id})
+                        MATCH (t:Transformer {asset_id: $asset_id})
+                        MERGE (f)-[:CONNECTS_TO {distance_m: $distance_m}]->(t)
+                        """, feeder_id=feeder_id, asset_id=asset_id, distance_m=200 + transformer_num * 5)
+                    else:
+                        # Later transformers connect to previous transformer.
+                        session.run("""
+                        MATCH (a:Transformer {asset_id: $previous_asset_id})
+                        MATCH (b:Transformer {asset_id: $asset_id})
+                        MERGE (a)-[:CONNECTS_TO {distance_m: $distance_m}]->(b)
+                        """, previous_asset_id=previous_asset_id, asset_id=asset_id, distance_m=200 + transformer_num * 5)
+                else:
+                    # Shallow radial topology: feeder connects directly to every transformer.
+                    session.run("""
+                    MATCH (f:Feeder {feeder_id: $feeder_id})
+                    MATCH (t:Transformer {asset_id: $asset_id})
+                    MERGE (f)-[:CONNECTS_TO {distance_m: $distance_m}]->(t)
+                    """, feeder_id=feeder_id, asset_id=asset_id, distance_m=200 + transformer_num * 5)
+
+                previous_asset_id = asset_id
 
                 for m in range(1, 6):
                     meter_num = (transformer_num - 1) * 5 + m
@@ -134,7 +159,7 @@ def seed_neo4j():
                     """, asset_id=asset_id, meter_id=meter_id)
 
     driver.close()
-    print("Neo4j seeded.")
+    print("Neo4j seeded with mixed shallow and deep topology.")
 
 
 def seed_cassandra():
